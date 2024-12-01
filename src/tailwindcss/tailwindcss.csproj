@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>tailwindcss</PackageId>
+    <Version>4.0.0-beta.4</Version>
+    <Authors>grady</Authors>
+    <Description>Use tailwind in ASP.NET projects</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="" />
+
+    <Content Include="build/tailwindcss.targets" Pack="true" PackagePath="build/" />
+
+    <None Include="content/input.css" Pack="true" PackagePath="content/" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="tailwindcss.linux.arm64" Version="$(Version)" Condition="$([MSBuild]::IsOsPlatform('Linux')) And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == Arm64" />
+    <PackageReference Include="tailwindcss.linux.x64" Version="$(Version)" Condition="$([MSBuild]::IsOsPlatform('Linux')) And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == X64" />
+    <PackageReference Include="tailwindcss.macos.arm64" Version="$(Version)" Condition="$([MSBuild]::IsOsPlatform('OSX')) And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == Arm64" />
+    <PackageReference Include="tailwindcss.macos.x64" Version="$(Version)" Condition="$([MSBuild]::IsOsPlatform('OSX')) And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == X64" />
+    <PackageReference Include="tailwindcss.windows.x64" Version="$(Version)" Condition="$([MSBuild]::IsOsPlatform('Windows')) And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == X64" />
+  </ItemGroup>
+
+</Project>

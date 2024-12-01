@@ -1,0 +1,40 @@
+<Project>
+  <PropertyGroup>
+    <TailwindPlatform Condition="$([MSBuild]::IsOsPlatform('Linux')) And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == Arm64">linux-arm64</TailwindPlatform>
+    <TailwindPlatform Condition="$([MSBuild]::IsOsPlatform('Linux')) And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == X64">linux-x64</TailwindPlatform>
+    <TailwindPlatform Condition="$([MSBuild]::IsOsPlatform('OSX')) And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == Arm64">macos-arm64</TailwindPlatform>
+    <TailwindPlatform Condition="$([MSBuild]::IsOsPlatform('OSX')) And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == X64">macos-x64</TailwindPlatform>
+    <TailwindPlatform Condition="$([MSBuild]::IsOsPlatform('Windows')) And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == X64">windows-x64.exe</TailwindPlatform>
+
+    <!-- need the AssemblyName which is not set in props file -->
+    <TailwindInputFile Condition="'$(TailwindInputFile)' == ''">$(MSBuildThisFileDirectory)../content/input.css</TailwindInputFile>
+
+    <TailwindOutputFile Condition="'$(TailwindOutputFile)' == ''">$(AssemblyName).tailwind.css</TailwindOutputFile>
+    <TailwindOutputPath>$(IntermediateOutputPath)/tailwindcss</TailwindOutputPath>
+    <TailwindOutputFileFullPath>$(TailwindOutputPath)/$(TailwindOutputFile)</TailwindOutputFileFullPath>
+
+    <TailwindProductionFlag Condition="'$(Configuration)' == 'Release'">-m</TailwindProductionFlag>
+  </PropertyGroup>
+
+  <Target Name="RunTailwindCli" BeforeTargets="BeforeBuild">
+    <Exec Command="&quot;$(TailwindCliPath)&quot; -i $(TailwindInputFile) -o $(TailwindOutputFileFullPath) $(TailwindProductionFlag)" />
+  </Target>
+
+  <Target Name="CopyTailwindFileToPublish" AfterTargets="AfterPublish">
+    <Copy SourceFiles="$(TailwindOutputFileFullPath)" DestinationFolder="$(PublishDir)wwwroot" />
+  </Target>
+
+  <ItemGroup>
+    <StaticWebAsset Include="$(TailwindOutputFileFullPath)">
+      <SourceType>Computed</SourceType>
+      <AssetKind>All</AssetKind>
+      <ContentRoot>$(TailwindOutputPath)</ContentRoot>
+      <RelativePath>$(TailwindOutputFile)</RelativePath>
+      <SourceId>Project</SourceId>
+      <OriginalItemSpec>$(TailwindOutputFileFullPath)</OriginalItemSpec>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+    </StaticWebAsset>
+  </ItemGroup>
+
+</Project>
