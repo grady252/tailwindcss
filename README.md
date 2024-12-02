@@ -1,6 +1,6 @@
 # tailwindcss
 
-Use [tailwindcss](https://tailwindcss.com/) v4 with ASP.NET Core.
+The easiest way to use [tailwindcss](https://tailwindcss.com/) v4 with ASP.NET Core.
 
 Note: This project is **not** affiliated with the official tailwindcss project.
 
