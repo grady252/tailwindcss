@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageId>tailwindcss.maxos.arm64</PackageId>
+    <PackageId>tailwindcss.macos.arm64</PackageId>
     <Version>4.0.0-beta.4</Version>
     <Authors>grady</Authors>
     <Description>Use tailwind in ASP.NET projects</Description>
