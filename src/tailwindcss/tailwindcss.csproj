@@ -6,8 +6,11 @@
     <PackageId>tailwindcss</PackageId>
     <Version>4.0.0-beta.4</Version>
     <Authors>grady</Authors>
-    <Description>Use tailwind in ASP.NET projects</Description>
+    <Description>Use tailwind in ASP.NET Core projects</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/grady252/tailwindcss</RepositoryUrl>
+    <PackageTags>tailwind, css</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

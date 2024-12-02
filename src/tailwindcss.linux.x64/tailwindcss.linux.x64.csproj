@@ -8,6 +8,9 @@
     <Authors>grady</Authors>
     <Description>Use tailwind in ASP.NET projects</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/grady252/tailwindcss</RepositoryUrl>
+    <PackageTags>tailwind, css</PackageTags>
 
     <TailwindCliUrl>https://github.com/tailwindlabs/tailwindcss/releases/download/v$(Version)/tailwindcss-linux-x64</TailwindCliUrl>
     <TailwindCliPath>$(MSBuildProjectDirectory)/runtime/tailwind</TailwindCliPath>
