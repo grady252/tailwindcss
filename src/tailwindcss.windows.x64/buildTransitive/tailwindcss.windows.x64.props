@@ -1,5 +1,0 @@
-<Project>
-  <PropertyGroup>
-    <TailwindCliPath>$(MSBuildThisFileDirectory)/../runtime/tailwind.exe</TailwindCliPath>
-  </PropertyGroup>
-</Project>

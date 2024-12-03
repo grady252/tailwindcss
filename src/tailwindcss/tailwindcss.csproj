@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>tailwindcss</PackageId>
-    <Version>4.0.0-beta.4</Version>
+    <Version>4.0.0-beta.4.1</Version>
     <Authors>grady</Authors>
     <Description>Use tailwind in ASP.NET Core projects</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -13,20 +13,53 @@
     <PackageTags>tailwind, css</PackageTags>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <BaseTailwindCliUrl>https://github.com/tailwindlabs/tailwindcss/releases/download/v$(Version)</BaseTailwindCliUrl>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Include="../../README.md" Pack="true" PackagePath="" />
 
     <Content Include="build/tailwindcss.targets" Pack="true" PackagePath="build/" />
 
     <None Include="content/input.css" Pack="true" PackagePath="content/" />
+
+    <None Include="runtimes/linux-arm64/native/tailwind" Pack="true" PackagePath="runtimes/linux-arm64/native/" />
+    <None Include="runtimes/linux-x64/native/tailwind" Pack="true" PackagePath="runtimes/linux-x64/native/" />
+    <None Include="runtimes/osx-arm64/native/tailwind" Pack="true" PackagePath="runtimes/osx-arm64/native/" />
+    <None Include="runtimes/osx-x64/native/tailwind" Pack="true" PackagePath="runtimes/osx-x64/native/" />
+    <None Include="runtimes/win-x64/native/tailwind.exe" Pack="true" PackagePath="runtimes/win-x64/native/" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="tailwindcss.linux.arm64" Version="$(Version)" Condition="$([MSBuild]::IsOsPlatform('Linux')) And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == Arm64" />
-    <PackageReference Include="tailwindcss.linux.x64" Version="$(Version)" Condition="$([MSBuild]::IsOsPlatform('Linux')) And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == X64" />
-    <PackageReference Include="tailwindcss.macos.arm64" Version="$(Version)" Condition="$([MSBuild]::IsOsPlatform('OSX')) And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == Arm64" />
-    <PackageReference Include="tailwindcss.macos.x64" Version="$(Version)" Condition="$([MSBuild]::IsOsPlatform('OSX')) And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == X64" />
-    <PackageReference Include="tailwindcss.windows.x64" Version="$(Version)" Condition="$([MSBuild]::IsOsPlatform('Windows')) And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == X64" />
-  </ItemGroup>
+  <Target Name="DownloadTailwindCli" BeforeTargets="Restore">
+    <MakeDir Directories="$(MSBuildProjectDirectory)/runtimes/linux-arm64/native" />
+    <Exec
+      Condition="!Exists('$(MSBuildProjectDirectory)/runtimes/linux-arm64/native/tailwind')"
+      Command="curl -L -o &quot;$(MSBuildProjectDirectory)/runtimes/linux-arm64/native/tailwind&quot; &quot;$(BaseTailwindCliUrl)/tailwindcss-linux-arm64&quot;" />
+
+    <MakeDir Directories="$(MSBuildProjectDirectory)/runtimes/linux-x64/native" />
+    <Exec
+      Condition="!Exists('$(MSBuildProjectDirectory)/runtimes/linux-x64/native/tailwind')"
+      Command="curl -L -o &quot;$(MSBuildProjectDirectory)/runtimes/linux-x64/native/tailwind&quot; &quot;$(BaseTailwindCliUrl)/tailwindcss-linux-x64&quot;" />
+
+    <MakeDir Directories="$(MSBuildProjectDirectory)/runtimes/osx-arm64/native" />
+    <Exec
+      Condition="!Exists('$(MSBuildProjectDirectory)/runtimes/osx-arm64/native/tailwind')"
+      Command="curl -L -o &quot;$(MSBuildProjectDirectory)/runtimes/osx-arm64/native/tailwind&quot; &quot;$(BaseTailwindCliUrl)/tailwindcss-macos-arm64&quot;" />
+
+    <MakeDir Directories="$(MSBuildProjectDirectory)/runtimes/osx-x64/native" />
+    <Exec
+      Condition="!Exists('$(MSBuildProjectDirectory)/runtimes/osx-x64/native/tailwind')"
+      Command="curl -L -o &quot;$(MSBuildProjectDirectory)/runtimes/osx-x64/native/tailwind&quot; &quot;$(BaseTailwindCliUrl)/tailwindcss-macos-x64&quot;" />
+
+    <MakeDir Directories="$(MSBuildProjectDirectory)/runtimes/win-x64/native" />
+    <Exec
+      Condition="!Exists('$(MSBuildProjectDirectory)/runtimes/win-x64/native/tailwind.exe')"
+      Command="curl -L -o &quot;$(MSBuildProjectDirectory)/runtimes/win-x64/native/tailwind.exe&quot; &quot;$(BaseTailwindCliUrl)/tailwindcss-windows-x64.exe&quot;" />
+  </Target>
+
+  <Target Name="CleanTailwindCli" AfterTargets="Clean">
+    <RemoveDir Directories="$(MSBuildProjectDirectory)/runtimes" />
+  </Target>
 
 </Project>
