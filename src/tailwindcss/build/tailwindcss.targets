@@ -1,14 +1,18 @@
 <Project>
   <PropertyGroup>
-    <BaseTailwindCliPath Condition="$([MSBuild]::IsOsPlatform('Linux')) And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == Arm64">$(MSBuildThisFileDirectory)..\runtimes\linux-arm64\native\tailwind</BaseTailwindCliPath>
-    <BaseTailwindCliPath Condition="$([MSBuild]::IsOsPlatform('Linux')) And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == X64">$(MSBuildThisFileDirectory)..\runtimes\linux-x64\native\tailwind</BaseTailwindCliPath>
-    <BaseTailwindCliPath Condition="$([MSBuild]::IsOsPlatform('OSX')) And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == Arm64">$(MSBuildThisFileDirectory)..\runtimes\osx-arm64\native\tailwind</BaseTailwindCliPath>
-    <BaseTailwindCliPath Condition="$([MSBuild]::IsOsPlatform('OSX')) And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == X64">$(MSBuildThisFileDirectory)..\runtimes\osx-x64\native\tailwind</BaseTailwindCliPath>
-    <BaseTailwindCliPath Condition="$([MSBuild]::IsOsPlatform('Windows')) And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == X64">$(MSBuildThisFileDirectory)..\runtimes\win-x64\native\tailwind.exe</BaseTailwindCliPath>
+    <BaseTailwindCliPath>$(MSBuildThisFileDirectory)../runtimes</BaseTailwindCliPath>
+    <TailwindCliName Condition="$([MSBuild]::IsOsPlatform('Linux')) And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == Arm64">tailwindcss-linux-arm64</TailwindCliName>
+    <TailwindCliName Condition="$([MSBuild]::IsOsPlatform('Linux')) And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == X64">tailwindcss-linux-x64</TailwindCliName>
+    <TailwindCliName Condition="$([MSBuild]::IsOsPlatform('OSX')) And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == Arm64">tailwindcss-macos-arm64</TailwindCliName>
+    <TailwindCliName Condition="$([MSBuild]::IsOsPlatform('OSX')) And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == X64">tailwindcss-macos-x64</TailwindCliName>
+    <TailwindCliName Condition="$([MSBuild]::IsOsPlatform('Windows')) And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == X64">tailwindcss-windows-x64.exe</TailwindCliName>
 
-    <!-- need the AssemblyName which is not set in props file -->
+    <TailwindVersion>v4.0.0-beta.5</TailwindVersion>
+    <TailwindDownloadUrl Condition="'$(TailwindDownloadUrl)' == ''">https://github.com/tailwindlabs/tailwindcss/releases/download/$(TailwindVersion)/$(TailwindCliName)</TailwindDownloadUrl>
+    <TailwindDownloadPath>$(BaseTailwindCliPath)/$(TailwindCliName)</TailwindDownloadPath>
+
     <TailwindInputFile Condition="'$(TailwindInputFile)' == ''">$(MSBuildThisFileDirectory)../content/input.css</TailwindInputFile>
-    <TailwindCliPath Condition="'$(TailwindCliPath)' == ''">$(BaseTailwindCliPath)</TailwindCliPath>
+    <TailwindCliPath Condition="'$(TailwindCliPath)' == ''">$(TailwindDownloadPath)</TailwindCliPath>
 
     <TailwindOutputFile Condition="'$(TailwindOutputFile)' == ''">$(AssemblyName).tailwind.css</TailwindOutputFile>
     <TailwindOutputPath>$(IntermediateOutputPath)tailwindcss</TailwindOutputPath>
@@ -17,7 +21,21 @@
     <TailwindProductionFlag Condition="'$(Configuration)' == 'Release'">-m</TailwindProductionFlag>
   </PropertyGroup>
 
-  <Target Name="RunTailwindCli" BeforeTargets="BeforeBuild">
+  <Target Name="DownloadTailwindCli">
+    <Message Importance="High" Text="Downloading Tailwind CLI" />
+    <DownloadFile SourceUrl="$(TailwindDownloadUrl)" DestinationFolder="$(BaseTailwindCliPath)" DestinationFileName="$(TailwindCliName)" />
+    <Exec Command="chmod +x &quot;$(TailwindDownloadPath)&quot;" Condition="$([MSBuild]::IsOsPlatform('Linux')) Or $([MSBuild]::IsOsPlatform('OSX'))" />
+  </Target>
+
+  <Target Name="EnsureTailwindCliOnRestore" AfterTargets="Restore">
+    <CallTarget Targets="DownloadTailwindCli" Condition="!Exists('$(TailwindDownloadPath)')" />
+  </Target>
+
+  <Target Name="EnsureTailwindCliOnBuild" BeforeTargets="BeforeBuild">
+    <CallTarget Targets="DownloadTailwindCli" Condition="!Exists('$(TailwindDownloadPath)')" />
+  </Target>
+
+  <Target Name="RunTailwindCli" AfterTargets="BeforeBuild">
     <Exec Command="&quot;$(TailwindCliPath)&quot; -i $(TailwindInputFile) -o $(TailwindOutputFileFullPath) $(TailwindProductionFlag)" />
   </Target>
 
